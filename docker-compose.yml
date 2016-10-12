@@ -1,23 +1,21 @@
- version: '2'
- services:
-   db:
-     image: mysql:5.7
-     restart: always
-     environment:
-       MYSQL_ROOT_PASSWORD: wordpress
-       MYSQL_DATABASE: wordpress
-       MYSQL_USER: wordpress
-       MYSQL_PASSWORD: wordpress
+mysqlsails:
+  image: mysql:latest
+  volumes:
+   - "./app/mysql.cnf:/etc/mysql/conf.d/mysql.cnf"
+  environment:
+    - MYSQL_ROOT_PASSWORD=root
+    - MYSQL_DATABASE=develop
+    - MYSQL_USER=root
+  ports:
+    - "3306:3306"
 
-   wordpress:
-     depends_on:
-       - db
-     image: wordpress:latest
-     links:
-       - db
-     ports:
-       - "80:80"
-     restart: always
-     environment:
-       WORDPRESS_DB_HOST: db:3306
-       WORDPRESS_DB_PASSWORD: wordpress
+wordpress:
+   image: wordpress:latest
+   links:
+    - mysqlsails
+   ports:
+    - "8000:80"
+   restart: always
+   environment:
+    WORDPRESS_DB_HOST: db:3306
+    WORDPRESS_DB_PASSWORD: root
